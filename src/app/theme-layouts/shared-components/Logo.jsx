@@ -32,7 +32,7 @@ function Logo() {
         <Typography className="text-2xl tracking-light font-semibold">
           FUSE
         </Typography>
-        <Box
+        {/* <Box
           className="badge flex items-center rounded space-x-6 px-8 py-4"
           sx={{
             backgroundColor: '#23272f',
@@ -46,7 +46,7 @@ function Logo() {
             width="16"
           />
           <span className="react-text text-md font-semibold">React</span>
-        </Box>
+        </Box> */}
       </div>
     </Root>
   );
