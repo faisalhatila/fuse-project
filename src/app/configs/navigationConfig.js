@@ -23,7 +23,7 @@ const navigationConfig = [
 		children: [
 			{
 				id: 'dashboards.project',
-				title: 'Project',
+				title: 'Projects',
 				type: 'item',
 				icon: 'heroicons-outline:clipboard-document-check',
 				url: '/dashboards/project'
@@ -35,20 +35,20 @@ const navigationConfig = [
 				icon: 'heroicons-outline:chart-pie',
 				url: '/dashboards/analytics'
 			},
-			{
-				id: 'dashboards.finance',
-				title: 'Finance',
-				type: 'item',
-				icon: 'heroicons-outline:banknotes',
-				url: '/dashboards/finance'
-			},
-			{
-				id: 'dashboards.crypto',
-				title: 'Crypto',
-				type: 'item',
-				icon: 'heroicons-outline:currency-dollar',
-				url: '/dashboards/crypto'
-			}
+			// {
+			// 	id: 'dashboards.finance',
+			// 	title: 'Finance',
+			// 	type: 'item',
+			// 	icon: 'heroicons-outline:banknotes',
+			// 	url: '/dashboards/finance'
+			// },
+			// {
+			// 	id: 'dashboards.crypto',
+			// 	title: 'Crypto',
+			// 	type: 'item',
+			// 	icon: 'heroicons-outline:currency-dollar',
+			// 	url: '/dashboards/crypto'
+			// }
 		]
 	},
 	{
