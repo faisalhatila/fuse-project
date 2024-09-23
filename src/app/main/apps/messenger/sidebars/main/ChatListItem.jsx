@@ -9,71 +9,68 @@ import ListItemButton from '@mui/material/ListItemButton';
 import UserAvatar from '../../UserAvatar';
 
 const StyledListItem = styled(ListItemButton)(({ theme }) => ({
-	'&.active': {
-		backgroundColor: theme.palette.background.default
-	}
+  '&.active': {
+    backgroundColor: theme.palette.background.default,
+  },
 }));
 
 /**
  * The chat list item.
  */
 function ChatListItem(props) {
-	const { item } = props;
-	return (
-		<StyledListItem
-			component={NavLinkAdapter}
-			className="px-24 py-12 min-h-80"
-			to={`/apps/messenger/${item.id}`}
-			end
-			activeClassName="active"
-		>
-			<UserAvatar user={item} />
+  const { item, projects } = props;
+  return (
+    <StyledListItem
+      component={NavLinkAdapter}
+      className="px-24 py-12 min-h-80"
+      to={`/apps/messenger/${item.id}`}
+      end
+      activeClassName="active"
+    >
+      <UserAvatar user={item} projects={projects} />
 
-			<ListItemText
-				classes={{
-					root: 'min-w-px px-16',
-					primary: 'font-medium text-base',
-					secondary: 'truncate'
-				}}
-				primary={item.name}
-				secondary={item.lastMessage}
-			/>
+      <ListItemText
+        classes={{
+          root: `min-w-px ${!props.projects && 'px-16'}`,
+          primary: 'font-medium text-base',
+          secondary: 'truncate',
+        }}
+        primary={item.name}
+        secondary={item.lastMessage}
+      />
 
-			{item.contactId && (
-				<div className="flex flex-col justify-center items-end">
-					{item?.lastMessageAt && (
-						<Typography
-							className="whitespace-nowrap mb-8 font-medium text-md"
-							color="text.secondary"
-						>
-							{format(new Date(item.lastMessageAt), 'PP')}
-						</Typography>
-					)}
-					<div className="items-center">
-						{item.muted && (
-							<FuseSvgIcon
-								size={20}
-								color="disabled"
-							>
-								heroicons-solid:volume-off
-							</FuseSvgIcon>
-						)}
-						{Boolean(item.unreadCount) && (
-							<Box
-								sx={{
-									backgroundColor: 'secondary.main',
-									color: 'secondary.contrastText'
-								}}
-								className="flex items-center justify-center min-w-20 h-20 rounded-full font-medium text-10 text-center"
-							>
-								{item.unreadCount}
-							</Box>
-						)}
-					</div>
-				</div>
-			)}
-		</StyledListItem>
-	);
+      {item.contactId && (
+        <div className="flex flex-col justify-center items-end">
+          {item?.lastMessageAt && (
+            <Typography
+              className="whitespace-nowrap mb-8 font-medium text-md"
+              color="text.secondary"
+            >
+              {format(new Date(item.lastMessageAt), 'PP')}
+            </Typography>
+          )}
+          <div className="items-center">
+            {item.muted && (
+              <FuseSvgIcon size={20} color="disabled">
+                heroicons-solid:volume-off
+              </FuseSvgIcon>
+            )}
+            {Boolean(item.unreadCount) && (
+              <Box
+                sx={{
+                  backgroundColor: 'secondary.main',
+                  color: 'secondary.contrastText',
+                }}
+                className="flex items-center justify-center min-w-20 h-20 rounded-full font-medium text-10 text-center"
+              >
+                {item.unreadCount}
+              </Box>
+            )}
+          </div>
+        </div>
+      )}
+    </StyledListItem>
+  );
 }
 
 export default ChatListItem;

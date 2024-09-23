@@ -52,11 +52,23 @@ const MessengerApi = api
 				invalidatesTags: ['messenger_chats']
 			}),
 			sendMessengerMessage: build.mutation({
-				query: (queryArg) => ({
-					url: `/mock-api/messenger/chats/${queryArg.contactId}`,
-					method: 'POST',
-					data: queryArg.message
-				}),
+				query: (queryArg) => {
+					const formData = new FormData();
+					formData.append('message', queryArg.message);
+					if (queryArg.files && queryArg.files.length > 0) {
+						queryArg.files.forEach((file, index) => {
+							formData.append(`file${index + 1}`, file); // Appending each file with a unique key
+						});
+					}
+					return {
+						url: `/mock-api/messenger/chats/${queryArg.contactId}`,
+						method: 'POST',
+						data: formData, // Use FormData here
+						headers: {
+							'Content-Type': 'multipart/form-data' // Important for file uploads
+						}
+					}
+				},
 				invalidatesTags: ['messenger_chat', 'messenger_chats']
 			}),
 			getMessengerUserProfile: build.query({
