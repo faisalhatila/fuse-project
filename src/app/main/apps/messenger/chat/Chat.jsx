@@ -24,7 +24,6 @@ import {
 } from '../MessengerApi';
 import { v4 as uuidv4 } from 'uuid';
 import EmojiPicker from 'emoji-picker-react';
-import UploadedFilePreview from './UploadedFilePreview';
 import UploadedFilePreview2 from './UploadedFilePreview2';
 import Message from './Message';
 import './chat.css';
