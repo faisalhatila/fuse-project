@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { lighten, styled } from '@mui/material/styles';
-import { Button, Modal, Typography } from '@mui/material';
+import { Button, Modal, Typography, Box } from '@mui/material';
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import clsx from 'clsx';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
@@ -10,6 +10,11 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
+import { AnimatePresence, motion } from 'framer-motion';
+import ItemIcon from '../../file-manager/ItemIcon';
+import IconButton from '@mui/material/IconButton';
+import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import moment from 'moment';
 
 const StyledMessageRow = styled('div')(({ theme }) => ({
   '&.contact': {
@@ -88,7 +93,7 @@ const Message = ({ chat, item, i, user }) => {
   const [modalItems, setModalItems] = useState([]);
   useEffect(() => {
     if (!!item?.files?.length) {
-      console.log({ files: item?.files });
+      // console.log({ files: item?.files });
     }
   }, [item]);
   function isFirstMessageOfGroup(item, i) {
@@ -107,6 +112,11 @@ const Message = ({ chat, item, i, user }) => {
   const handleCloseModal = () => {
     setModalItems([]);
     setIsOpenModal(false);
+  };
+  const formatFileSize = (size) => {
+    return size > 1024 * 1024
+      ? `${(size / (1024 * 1024)).toFixed(2)} MB`
+      : `${(size / 1024).toFixed(2)} KB`;
   };
   return (
     <>
@@ -130,7 +140,6 @@ const Message = ({ chat, item, i, user }) => {
               onClick={() => {
                 setModalItems(item?.files);
                 setIsOpenModal(true);
-                console.log({ files: item?.files });
               }}
               className="grid grid-cols-2 gap-4 mb-5"
             >
@@ -172,53 +181,113 @@ const Message = ({ chat, item, i, user }) => {
           </Typography>
         </div>
       </StyledMessageRow>
-      <Modal
-        open={isOpenModal}
-        onClose={handleCloseModal}
-        className="flex justify-center items-center bg-[rgba(0,0,0,0.5)]"
-      >
-        <Swiper
-          navigation={true}
-          modules={[Navigation]}
-          className="mySwiper"
-          style={{
-            '--swiper-pagination-color': '#fff',
-            '--swiper-navigation-color': '#fff',
-          }}
-        >
-          {modalItems?.map((file) => (
-            <SwiperSlide>
-              <div className="flex justify-center items-center">
-                <div className="w-[450px] relative min-h-[450px] bg-white rounded flex justify-center items-center flex-col ">
-                  <img
-                    src={
-                      file.type === 'application/pdf'
-                        ? '/assets/icons/png-pdf-file-icon-8.png'
-                        : file.type ===
-                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                          ? '/assets/icons/docs.png'
-                          : file.type === 'text/plain'
-                            ? '/assets/icons/text.png'
-                            : file?.base64
-                    }
-                    // src={'/assets/icons/docs.png'}
-                    alt="Preview"
-                    className="max-w-[60%]"
-                  />
-                  <Button
-                    variant="contained"
-                    className="mt-16 absolute bottom-10"
-                    color="secondary"
-                    onClick={handleCloseModal}
+      <AnimatePresence>
+        {isOpenModal && modalItems?.length && (
+          <motion.div
+            initial={{ x: 300, opacity: 0 }} // Start off-screen to the right
+            animate={{ x: 0, opacity: 1, transition: { duration: 0.3 } }} // Slide in faster (duration: 0.3s)
+            exit={{ x: 300, opacity: 0, transition: { duration: 0.2 } }} // Slide out to the right, faster exit (duration: 0.2s)
+            className="file-details p-24 sm:p-32 fixed top-[128px] right-[70px] bg-white overflow-y-auto max-w-[400px]"
+            style={{
+              minHeight: 'calc(100vh - 261px)',
+              maxHeight: 'calc(100vh - 261px)',
+            }}
+          >
+            <div className="flex items-center justify-end w-full">
+              <IconButton onClick={handleCloseModal}>
+                <FuseSvgIcon>heroicons-outline:x-mark</FuseSvgIcon>
+              </IconButton>
+            </div>
+            <Swiper
+              navigation={true}
+              modules={[Navigation]}
+              className="mySwiper"
+              style={{
+                '--swiper-pagination-color': '#EF5350',
+                '--swiper-navigation-color': '#EF5350',
+              }}
+            >
+              {modalItems?.map((file) => (
+                <SwiperSlide>
+                  <Box
+                    className=" w-full rounded-lg border preview h-128 sm:h-256 file-icon flex items-center justify-center my-32"
+                    sx={{
+                      backgroundColor: (theme) =>
+                        theme.palette.mode === 'light'
+                          ? lighten(theme.palette.background.default, 0.4)
+                          : lighten(theme.palette.background.default, 0.02),
+                    }}
                   >
-                    Download
-                  </Button>
-                </div>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </Modal>
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1, transition: { delay: 0.3 } }}
+                      className="flex items-center justify-center"
+                    >
+                      {/* <ItemIcon type={'XLS'} /> */}
+                      <img
+                        src={
+                          file.type === 'application/pdf'
+                            ? '/assets/icons/png-pdf-file-icon-8.png'
+                            : file.type ===
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                              ? '/assets/icons/docs.png'
+                              : file.type === 'text/plain'
+                                ? '/assets/icons/text.png'
+                                : file?.base64
+                        }
+                        // src={'/assets/icons/docs.png'}
+                        alt="Preview"
+                        className="max-w-[60%]"
+                      />
+                    </motion.div>
+                  </Box>
+
+                  <Typography className="text-17 font-medium">
+                    {file.name}
+                  </Typography>
+
+                  <div className="text-15 font-medium mt-32">Information</div>
+                  <div className="flex flex-col mt-16 border-t border-b divide-y font-medium">
+                    <div className="flex items-center justify-between py-12">
+                      <Typography color="text.secondary">Created By</Typography>
+                      <Typography>{'You'}</Typography>
+                    </div>
+                    <div className="flex items-center justify-between py-12">
+                      <Typography color="text.secondary">Created At</Typography>
+                      <Typography>
+                        {moment().format('MM.DD.YYYY hh:mm A')}
+                      </Typography>
+                    </div>
+                    <div className="flex items-center justify-between py-12">
+                      <Typography color="text.secondary">
+                        Modified At
+                      </Typography>
+                      <Typography>
+                        {moment().format('MM.DD.YYYY hh:mm A')}
+                      </Typography>
+                    </div>
+                    <div className="flex items-center justify-between py-12">
+                      <Typography color="text.secondary">Size</Typography>
+                      <Typography>{formatFileSize(file.size)}</Typography>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-16 w-full mt-32">
+                    <Button
+                      className="flex-auto"
+                      color="secondary"
+                      variant="contained"
+                    >
+                      Download
+                    </Button>
+                    <Button className="flex-auto">Delete</Button>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

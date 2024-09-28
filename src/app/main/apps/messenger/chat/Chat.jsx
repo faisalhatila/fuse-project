@@ -27,6 +27,9 @@ import EmojiPicker from 'emoji-picker-react';
 import UploadedFilePreview2 from './UploadedFilePreview2';
 import Message from './Message';
 import './chat.css';
+import { motion } from 'framer-motion';
+import ItemIcon from '../../file-manager/ItemIcon';
+import { Button } from '@mui/material';
 
 const StyledMessageRow = styled('div')(({ theme }) => ({
   '&.contact': {
@@ -145,6 +148,8 @@ function Chat(props) {
     });
   }
 
+  const messageFieldRef = useRef(null);
+
   function onInputChange(ev) {
     setMessage(ev.target.value);
   }
@@ -152,7 +157,7 @@ function Chat(props) {
   async function onMessageSubmit(ev) {
     ev.preventDefault();
 
-    if (message === '') {
+    if (message === '' && !selectedFiles.length) {
       return;
     }
 
@@ -194,12 +199,18 @@ function Chat(props) {
       id: uuidv4(),
     }));
 
-    console.log({ files, tempFiles });
-
     setSelectedFiles((prevFiles) => [...prevFiles, ...tempFiles]);
     const file = event.target.files[0];
     if (file) {
       setSelectedFile(file);
+    }
+    // Focus the InputBase after file selection
+    if (messageFieldRef && messageFieldRef.current) {
+      // Access the actual input inside the InputBase and focus it
+      const input = messageFieldRef.current.querySelector('input');
+      if (input) {
+        input.focus(); // Set focus to the inner input element
+      }
     }
   };
 
@@ -252,56 +263,58 @@ function Chat(props) {
           <>
             <div ref={chatRef} className="flex flex-1 flex-col overflow-y-auto">
               {chat?.length > 0 && (
-                <div className="flex flex-col pt-16 px-16 pb-40">
-                  {chat.map((item, i) => {
-                    item.files;
-                    return (
-                      // <StyledMessageRow
-                      //   key={i}
-                      //   className={clsx(
-                      //     'flex flex-col grow-0 shrink-0 items-start justify-end relative px-16 pb-4',
-                      //     item.contactId === user.id ? 'me' : 'contact',
-                      //     {
-                      //       'first-of-group': isFirstMessageOfGroup(item, i),
-                      //     },
-                      //     { 'last-of-group': isLastMessageOfGroup(item, i) },
-                      //     i + 1 === chat.length && 'pb-72'
-                      //   )}
-                      // >
-                      //   <div className="bubble flex relative items-center justify-center px-12 py-8 max-w-full">
-                      //     <Typography className=" whitespace-pre-wrap text-md">
-                      //       {item.value}
-                      //     </Typography>
-                      //     {!!item?.files?.length &&
-                      //       console.log({ file: item?.files[0] })}
-                      //     {!!item?.files?.length && (
-                      //       <img
-                      //         // src={URL.createObjectURL(selectedFiles[0].file)}
-                      //         src={URL.createObjectURL(item?.files[0])}
-                      //         alt="Preview"
-                      //         className="w-[100px]"
-                      //       />
-                      //     )}
+                <div className="flex">
+                  <div className="flex flex-col pt-16 px-16 pb-40 flex-1">
+                    {chat.map((item, i) => {
+                      item.files;
+                      return (
+                        // <StyledMessageRow
+                        //   key={i}
+                        //   className={clsx(
+                        //     'flex flex-col grow-0 shrink-0 items-start justify-end relative px-16 pb-4',
+                        //     item.contactId === user.id ? 'me' : 'contact',
+                        //     {
+                        //       'first-of-group': isFirstMessageOfGroup(item, i),
+                        //     },
+                        //     { 'last-of-group': isLastMessageOfGroup(item, i) },
+                        //     i + 1 === chat.length && 'pb-72'
+                        //   )}
+                        // >
+                        //   <div className="bubble flex relative items-center justify-center px-12 py-8 max-w-full">
+                        //     <Typography className=" whitespace-pre-wrap text-md">
+                        //       {item.value}
+                        //     </Typography>
+                        //     {!!item?.files?.length &&
+                        //       console.log({ file: item?.files[0] })}
+                        //     {!!item?.files?.length && (
+                        //       <img
+                        //         // src={URL.createObjectURL(selectedFiles[0].file)}
+                        //         src={URL.createObjectURL(item?.files[0])}
+                        //         alt="Preview"
+                        //         className="w-[100px]"
+                        //       />
+                        //     )}
 
-                      //     <Typography
-                      //       className="time absolute hidden w-full text-sm -mb-20 ltr:left-0 rtl:right-0 bottom-0 whitespace-nowrap"
-                      //       color="text.secondary"
-                      //     >
-                      //       {formatDistanceToNow(new Date(item.createdAt), {
-                      //         addSuffix: true,
-                      //       })}
-                      //     </Typography>
-                      //   </div>
-                      // </StyledMessageRow>
-                      <Message
-                        chat={chat}
-                        item={item}
-                        user={user}
-                        i={i}
-                        key={i}
-                      />
-                    );
-                  })}
+                        //     <Typography
+                        //       className="time absolute hidden w-full text-sm -mb-20 ltr:left-0 rtl:right-0 bottom-0 whitespace-nowrap"
+                        //       color="text.secondary"
+                        //     >
+                        //       {formatDistanceToNow(new Date(item.createdAt), {
+                        //         addSuffix: true,
+                        //       })}
+                        //     </Typography>
+                        //   </div>
+                        // </StyledMessageRow>
+                        <Message
+                          chat={chat}
+                          item={item}
+                          user={user}
+                          i={i}
+                          key={i}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
@@ -319,11 +332,12 @@ function Chat(props) {
                 }}
               >
                 <div className="flex items-end relative">
-                  <IconButton
-                    onClick={() => setIsOpenEmoji(true)}
-                    type="submit"
-                  >
-                    <FuseSvgIcon className="text-3xl" color="action">
+                  <IconButton type="button">
+                    <FuseSvgIcon
+                      onClick={() => setIsOpenEmoji(true)}
+                      className="text-3xl"
+                      color="action"
+                    >
                       heroicons-outline:face-smile
                     </FuseSvgIcon>
                   </IconButton>
@@ -335,7 +349,7 @@ function Chat(props) {
                     className="absolute left-[0px]"
                     open={isOpenEmoji}
                     onEmojiClick={(emoji) => {
-                      console.log({ emoji });
+                      setMessage((ps) => ps.concat(emoji.emoji));
                       setIsOpenEmoji(false);
                     }}
                     suggestedEmojisMode={false}
@@ -397,13 +411,14 @@ function Chat(props) {
                       </div>
                     )}
                     <InputBase
-                      autoFocus={false}
+                      autoFocus={true}
                       id="message-input"
                       className="flex-1 flex grow shrink-0 mx-8 border-2"
                       placeholder="Type your message"
                       onChange={onInputChange}
                       value={message}
                       sx={{ backgroundColor: 'background.paper' }}
+                      ref={messageFieldRef}
                     />
                   </div>
                   <IconButton type="submit">

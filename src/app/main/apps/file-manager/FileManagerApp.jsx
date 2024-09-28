@@ -14,45 +14,36 @@ import { selectSelectedItemId } from './fileManagerAppSlice';
  * The file manager app.
  */
 function FileManagerApp() {
-	const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
-	const routeParams = useParams();
-	const { folderId } = routeParams;
-	const { data, isLoading } = useGetFileManagerFolderQuery(folderId);
-	const selectedItemId = useAppSelector(selectSelectedItemId);
-	const selectedItem = _.find(data?.items, { id: selectedItemId });
-	const folders = _.filter(data?.items, { type: 'folder' });
-	const files = _.reject(data?.items, { type: 'folder' });
-	const path = data?.path;
+  const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
+  const routeParams = useParams();
+  const { folderId } = routeParams;
+  const { data, isLoading } = useGetFileManagerFolderQuery(folderId);
+  const selectedItemId = useAppSelector(selectSelectedItemId);
+  const selectedItem = _.find(data?.items, { id: selectedItemId });
+  const folders = _.filter(data?.items, { type: 'folder' });
+  const files = _.reject(data?.items, { type: 'folder' });
+  const path = data?.path;
 
-	if (isLoading) {
-		return <FuseLoading />;
-	}
+  console.log({ data });
 
-	return (
-		<FusePageCarded
-			header={
-				<FileManagerHeader
-					path={path}
-					folders={folders}
-					files={files}
-				/>
-			}
-			content={
-				<FileManagerList
-					folders={folders}
-					files={files}
-				/>
-			}
-			rightSidebarOpen={Boolean(selectedItem)}
-			rightSidebarContent={
-				<div className="w-full">
-					<DetailSidebarContent items={data?.items} />
-				</div>
-			}
-			rightSidebarWidth={400}
-			scroll={isMobile ? 'normal' : 'content'}
-		/>
-	);
+  if (isLoading) {
+    return <FuseLoading />;
+  }
+
+  return (
+    <FusePageCarded
+      header={<FileManagerHeader path={path} folders={folders} files={files} />}
+      content={<FileManagerList folders={folders} files={files} />}
+      rightSidebarOpen={Boolean(selectedItem)}
+      rightSidebarContent={
+        <div className="w-full">
+          <DetailSidebarContent items={data?.items} />
+        </div>
+      }
+      rightSidebarWidth={400}
+      scroll={isMobile ? 'normal' : 'content'}
+    />
+  );
 }
 
 export default FileManagerApp;

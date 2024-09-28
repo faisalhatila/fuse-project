@@ -34,10 +34,14 @@ const settingsConfig = {
 	 * The theme object defines the color theme for the application.
 	 */
 	theme: {
-		main: themesConfig.default,
-		navbar: themesConfig.defaultDark,
-		toolbar: themesConfig.default,
-		footer: themesConfig.defaultDark
+		// main: themesConfig.default,
+		// navbar: themesConfig.defaultDark,
+		// toolbar: themesConfig.default,
+		// footer: themesConfig.defaultDark
+		main: themesConfig.slateCrimson,
+		navbar: themesConfig.slateCrimsonDark,
+		toolbar: themesConfig.slateCrimson,
+		footer: themesConfig.slateCrimsonDark
 	},
 	/**
 	 * The defaultAuth property defines the default authorization roles for the application.

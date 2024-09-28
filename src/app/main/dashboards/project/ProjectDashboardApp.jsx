@@ -11,33 +11,33 @@ import BudgetTab from './tabs/budget/BudgetTab';
 import { useGetProjectDashboardWidgetsQuery } from './ProjectDashboardApi';
 
 const Root = styled(FusePageSimple)(({ theme }) => ({
-	'& .FusePageSimple-header': {
-		backgroundColor: theme.palette.background.paper,
-		boxShadow: `inset 0 -1px 0 0px  ${theme.palette.divider}`
-	}
+  '& .FusePageSimple-header': {
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: `inset 0 -1px 0 0px  ${theme.palette.divider}`,
+  },
 }));
 
 /**
  * The ProjectDashboardApp page.
  */
 function ProjectDashboardApp() {
-	const { isLoading } = useGetProjectDashboardWidgetsQuery();
-	const [tabValue, setTabValue] = useState('home');
+  const { isLoading } = useGetProjectDashboardWidgetsQuery();
+  const [tabValue, setTabValue] = useState('home');
 
-	function handleTabChange(event, value) {
-		setTabValue(value);
-	}
+  function handleTabChange(event, value) {
+    setTabValue(value);
+  }
 
-	if (isLoading) {
-		return <FuseLoading />;
-	}
+  if (isLoading) {
+    return <FuseLoading />;
+  }
 
-	return (
-		<Root
-			header={<ProjectDashboardAppHeader />}
-			content={
-				<div className="w-full pt-16 sm:pt-24">
-					<div className="w-full px-24">
+  return (
+    <Root
+      header={<ProjectDashboardAppHeader />}
+      content={
+        <div className="w-full pt-16 sm:pt-24">
+          {/* <div className="w-full px-24">
 						<FuseTabs
 							value={tabValue}
 							onChange={handleTabChange}
@@ -56,14 +56,14 @@ function ProjectDashboardApp() {
 								label="Team"
 							/>
 						</FuseTabs>
-					</div>
-					{tabValue === 'home' && <HomeTab />}
-					{tabValue === 'budget' && <BudgetTab />}
-					{tabValue === 'team' && <TeamTab />}
-				</div>
-			}
-		/>
-	);
+					</div> */}
+          {tabValue === 'home' && <HomeTab />}
+          {tabValue === 'budget' && <BudgetTab />}
+          {tabValue === 'team' && <TeamTab />}
+        </div>
+      }
+    />
+  );
 }
 
 export default ProjectDashboardApp;
