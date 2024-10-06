@@ -1,19 +1,16 @@
-import { lighten, styled } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import clsx from 'clsx';
-import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import InputBase from '@mui/material/InputBase';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
-import { useAppSelector } from 'app/store/hooks';
-import { selectSelectedContactId } from './messengerPanelSlice';
 import {
-  useGetMessengerChatQuery,
-  useGetMessengerUserProfileQuery,
-  useSendMessengerMessageMutation,
-} from '../MessengerApi';
+  IconButton,
+  InputBase,
+  lighten,
+  Paper,
+  styled,
+  Typography,
+} from '@mui/material';
+import clsx from 'clsx';
+import { formatDistanceToNow } from 'date-fns';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { chatMessages } from './chatData';
 
 const StyledMessageRow = styled('div')(({ theme }) => ({
   '&.contact': {
@@ -87,20 +84,18 @@ const StyledMessageRow = styled('div')(({ theme }) => ({
   },
 }));
 
-/**
- * The chat component.
- */
-function Chat(props) {
+const ChatComponent = (props) => {
   const { className } = props;
-  const selectedContactId = useAppSelector(selectSelectedContactId);
-  const { data: chat } = useGetMessengerChatQuery(selectedContactId);
-  const { data: user } = useGetMessengerUserProfileQuery();
-  const [sendMessage] = useSendMessengerMessageMutation();
+  const [chat, setChat] = useState(chatMessages);
   const [messageText, setMessageText] = useState('');
   const chatScroll = useRef(null);
   useEffect(() => {
     scrollToBottom();
+    console.log({ chat });
   }, [chat]);
+  const onInputChange = (ev) => {
+    setMessageText(ev.target.value);
+  };
 
   function scrollToBottom() {
     if (!chatScroll.current) {
@@ -112,16 +107,15 @@ function Chat(props) {
       behavior: 'instant',
     });
   }
-
-  const onInputChange = (ev) => {
-    setMessageText(ev.target.value);
-  };
-  console.log({ chat });
   return (
     <Paper
-      className={clsx('flex flex-col relative pb-64 shadow', className)}
+      className={clsx(
+        'flex flex-col relative pb-64 shadow min-w-[350px] max-w-[350px] overflow-y-auto max-h-[660px] border-2 border-grey-800',
+        className
+      )}
       sx={{ background: (theme) => theme.palette.background.default }}
     >
+      <div className="bg-grey-800 text-white p-10">Project A Chat</div>
       <div
         ref={chatScroll}
         className="flex flex-1 flex-col overflow-y-auto overscroll-contain"
@@ -149,7 +143,10 @@ function Chat(props) {
                       key={i}
                       className={clsx(
                         'flex flex-col grow-0 shrink-0 items-start justify-end relative px-16 pb-4',
-                        item.contactId === user.id ? 'me' : 'contact',
+                        item.contactId ===
+                          'cfaad35d-07a3-4447-a6c3-d8c3d54fd5df'
+                          ? 'me'
+                          : 'contact',
                         { 'first-of-group': isFirstMessageOfGroup(item, i) },
                         { 'last-of-group': isLastMessageOfGroup(item, i) },
                         i + 1 === chat.length && 'pb-40'
@@ -172,7 +169,7 @@ function Chat(props) {
                   );
                 })
               : null;
-          }, [chat, user?.id])}
+          }, [chat, 'cfaad35d-07a3-4447-a6c3-d8c3d54fd5df'])}
         </div>
 
         {chat?.length === 0 && (
@@ -200,10 +197,19 @@ function Chat(props) {
             return;
           }
 
-          sendMessage({
-            message: messageText,
-            contactId: selectedContactId,
-          });
+          //   sendMessage({
+          //     message: messageText,
+          //     contactId: 'cfaad35d-07a3-4447-a6c3-d8c3d54fd5df',
+          //   });
+          setChat((ps) => [
+            ...ps,
+            {
+              value: messageText,
+              contactId: 'cfaad35d-07a3-4447-a6c3-d8c3d54fd5df',
+              createdAt: new Date().toISOString(),
+              id: 'cfaad35d-07a3-4447-asd',
+            },
+          ]);
           setMessageText('');
         };
         return (
@@ -233,9 +239,9 @@ function Chat(props) {
             </form>
           )
         );
-      }, [chat, messageText, selectedContactId])}
+      }, [chat, messageText, 'cfaad35d-07a3-4447-a6c3-d8c3d54fd5df'])}
     </Paper>
   );
-}
+};
 
-export default Chat;
+export default ChatComponent;
